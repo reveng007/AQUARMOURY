@@ -22,7 +22,7 @@ The loader itself is fairly small(`~40 kB`). It is compiled to a DLL and convert
 
 Here's an overview of the flow:
 
-![Running Wraith](https://github.com/slaeryan/AQUARMOURY/blob/master/Wraith/Screenshots/running-wraith.PNG "Running Wraith")
+![Running Wraith](https://github.com/reveng007/AQUARMOURY/blob/master/Wraith/Screenshots/running-wraith.PNG "Running Wraith")
 
 Read below to know what are some of the OPSEC concerns faced by existing toolings and how `Wraith` aims to solve some of them.
 
@@ -38,7 +38,7 @@ Ex: Firefox, Chrome, Edge, IE, other browsers etc.
 
 Luckily for us attackers, we can automate an IE browser instance programmatically using [IE COM Object](https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/platform-apis/aa752084(v=vs.85)) in the background without any visible windows.
 
-![IE COM](https://github.com/slaeryan/AQUARMOURY/blob/master/Wraith/Screenshots/ie-com.PNG "IE COM")
+![IE COM](https://github.com/reveng007/AQUARMOURY/blob/master/Wraith/Screenshots/ie-com.PNG "IE COM")
 
 This is a screenshot demonstrating how we can fetch arbitrary text data from our `Payload Staging Server`(Here seen using `AWS S3 bucket`) with `IE COM Object`.
 
@@ -62,9 +62,9 @@ To this effect we have implemented 4 safety checks in our loader:
 2) **Kill Date - To render the loader(and by extension the payload) harmless after the engagement ends**. This is done by checking the current date on the host with the hard-coded kill date and if it exceeds the kill date then we simply do not proceed.
 3) **Static Endpoint Validation - To ensure our payload doesn't run on non-targeted assets**. This is done by comparing a `SHA-256` hash of host artefact(Host Name/Domain Name) retrieved at runtime with the hard-coded `SHA-256` hash value of the same. If it matches, assume that our code has detonated on a targeted asset and proceed execution otherwise terminate. Additionally, we hard-code the hashed value instead of the plaintext value itself to make the process of identifying the intended target non-trivial.
 
-![Workstation Artifact](https://github.com/slaeryan/AQUARMOURY/blob/master/Wraith/Screenshots/workstation.PNG "Workstation Artifact")
+![Workstation Artifact](https://github.com/reveng007/AQUARMOURY/blob/master/Wraith/Screenshots/workstation.PNG "Workstation Artifact")
 
-![Domain-Joined Artifact](https://github.com/slaeryan/AQUARMOURY/blob/master/Wraith/Screenshots/domain-joined.PNG "Domain-Joined Artifact")
+![Domain-Joined Artifact](https://github.com/reveng007/AQUARMOURY/blob/master/Wraith/Screenshots/domain-joined.PNG "Domain-Joined Artifact")
 
 Here we can see the respective artefact name and values for `Workstation` and `Domain-Joined` machines respectively.
 
@@ -74,11 +74,11 @@ All these elaborate safety measures also help us to protect our IP. In a worst-c
 
 Here is a screenshot highlighting the flow:
 
-![Execution Guardrails](https://github.com/slaeryan/AQUARMOURY/blob/master/Wraith/Screenshots/execution-guardrail.PNG "Execution Guardrails")
+![Execution Guardrails](https://github.com/reveng007/AQUARMOURY/blob/master/Wraith/Screenshots/execution-guardrail.PNG "Execution Guardrails")
 
 And here's how it looks when executed on a non-targeted asset:
 
-![Non Targeted](https://github.com/slaeryan/AQUARMOURY/blob/master/Wraith/Screenshots/non-targeted.PNG "Non Targeted")
+![Non Targeted](https://github.com/reveng007/AQUARMOURY/blob/master/Wraith/Screenshots/non-targeted.PNG "Non Targeted")
 
 ### Detection of Injection/C2 payload - `"Advanced Bird" APC Injection`
 Part of the motivation behind using a loader is **to deliver the payload into the address space of a legitimate, signed and trusted process from where the beaconing network activity is not going to be flagged.** One of the ways to achieve this is using Process Injection.
@@ -109,11 +109,11 @@ Another viable alternative created by [@modexp](https://twitter.com/modexpblog) 
 
 This is a screenshot of using "normal" APC Injection without syscalls which clearly shows that our API calls were intercepted by our pseudo-EDR a.k.a. [API Monitor](http://www.rohitab.com/apimonitor):
 
-![API Monitor Detected](https://github.com/slaeryan/AQUARMOURY/blob/master/Wraith/Screenshots/api-monitor-detected.PNG "API Monitor Detected")
+![API Monitor Detected](https://github.com/reveng007/AQUARMOURY/blob/master/Wraith/Screenshots/api-monitor-detected.PNG "API Monitor Detected")
 
 And this shows how our injection technique with direct syscalls would look through the lens of an EDR:
 
-![API Monitor Undetected](https://github.com/slaeryan/AQUARMOURY/blob/master/Wraith/Screenshots/api-monitor-undetected.PNG "API Monitor Undetected")
+![API Monitor Undetected](https://github.com/reveng007/AQUARMOURY/blob/master/Wraith/Screenshots/api-monitor-undetected.PNG "API Monitor Undetected")
 
 As we can see, our injection wasn't intercepted by our _EDR_ and the **assumption here being that the EDR relies on Ring-3/User-Mode hooks instead of KernelMode ETW Threat Intelligence functions to gain visibility into potentially suspicious actions**(which most of them do not thanks to MS :))
 
@@ -139,7 +139,7 @@ Now would be a good time to introduce [PPID Spoofing](https://blog.didierstevens
 
 Here's how it looks in-action:
 
-![Protecting C2 Payload](https://github.com/slaeryan/AQUARMOURY/blob/master/Wraith/Screenshots/wraith-acg-ppid.PNG "Protecting C2 Payload")
+![Protecting C2 Payload](https://github.com/reveng007/AQUARMOURY/blob/master/Wraith/Screenshots/wraith-acg-ppid.PNG "Protecting C2 Payload")
 
 In this way we can counter the holy trio of EDR detection using:
 
@@ -158,7 +158,7 @@ To hinder memory analysis, we have chosen to use a variant of `APC Injection` wh
 
 This can be verified using [PE-Sieve](https://github.com/hasherezade/pe-sieve) too:
 
-![PE Sieve](https://github.com/slaeryan/AQUARMOURY/blob/master/Wraith/Screenshots/pesieve.PNG "PE Sieve")
+![PE Sieve](https://github.com/reveng007/AQUARMOURY/blob/master/Wraith/Screenshots/pesieve.PNG "PE Sieve")
 
 Another alternative is using [SiR Injection]() i.e. to hijack thread execution by redirecting `RIP` register to our payload using `GetThreadContext/SetThreadContext`.
 
@@ -176,11 +176,11 @@ To hinder Blue Teams from signaturing our loader PIC blob, I have taken the libe
 
 Here's how a "stock" shellcode looks on VT:
 
-![Unencoded Shellcode](https://github.com/slaeryan/AQUARMOURY/blob/master/Wraith/Screenshots/unencoded-shellcode.png "Unencoded Shellcode")
+![Unencoded Shellcode](https://github.com/reveng007/AQUARMOURY/blob/master/Wraith/Screenshots/unencoded-shellcode.png "Unencoded Shellcode")
 
 And here's how the same shellcode looks after a single pass from a polymorphic encoder:
 
-![Encoded Shellcode](https://github.com/slaeryan/AQUARMOURY/blob/master/Wraith/Screenshots/encoded-shellcode.png "Encoded Shellcode")
+![Encoded Shellcode](https://github.com/reveng007/AQUARMOURY/blob/master/Wraith/Screenshots/encoded-shellcode.png "Encoded Shellcode")
 
 Furthermore, we dynamically resolve most of the _suspicious_ API functions at runtime using `LoadLibraryA/GetModuleHandleA + GetProcAddress` to achieve a clean import table.
 
@@ -192,13 +192,13 @@ This post would be incomplete without briefly mentioning some of the ways by whi
 
 Here is a mandatory [CAPA](https://github.com/fireeye/capa) scan result of the loader shellcode:
 
-![CAPA](https://github.com/slaeryan/AQUARMOURY/blob/master/Wraith/Screenshots/capa.PNG "CAPA")
+![CAPA](https://github.com/reveng007/AQUARMOURY/blob/master/Wraith/Screenshots/capa.PNG "CAPA")
 
 Note that it provides us with almost no intel since we have a clean import table.
 
 And here is the Sysmon log using [SwiftOnSecurity's Sysmon config](https://github.com/SwiftOnSecurity/sysmon-config) of running `Wraith` on the host:
 
-![Sysmon](https://github.com/slaeryan/AQUARMOURY/blob/master/Wraith/Screenshots/wraith-sysmon.PNG "Sysmon")
+![Sysmon](https://github.com/reveng007/AQUARMOURY/blob/master/Wraith/Screenshots/wraith-sysmon.PNG "Sysmon")
 
 The red `+` denotes that these two events(Sysmon Event ID 1 & 5) are not a part of the loader blob and can be avoided in a real-life operation. The rest of the events reported are quite obvious as one might expect. There's a Process Creation Event of the sacrificial process, another process creation event of the `IE Browser` and a DNS Query Event(Sysmon Event ID 22) fired from the browser.
 
@@ -206,13 +206,13 @@ Note that if we enabled Process Access Event(Sysmon Event ID 10), we would have 
 
 Here is a [YARA](https://github.com/VirusTotal/yara) rule to detect hardcoded direct syscalls courtesy of [Samir Bousseaden a.k.a @SBousseaden](https://twitter.com/sbousseaden):
 
-![YARA](https://github.com/slaeryan/AQUARMOURY/blob/master/Wraith/Screenshots/yara.PNG "YARA")
+![YARA](https://github.com/reveng007/AQUARMOURY/blob/master/Wraith/Screenshots/yara.PNG "YARA")
 
 The rule is included in the repo.
 
 Here's a screenshot showing detection of `PPID Spoofing`:
 
-![PPIDetector](https://github.com/slaeryan/AQUARMOURY/blob/master/Wraith/Screenshots/detect-ppid-spoofing.PNG "PPIDetector")
+![PPIDetector](https://github.com/reveng007/AQUARMOURY/blob/master/Wraith/Screenshots/detect-ppid-spoofing.PNG "PPIDetector")
 
 Remember how we said that `PPID Spoofing` [can be detected](https://www.ired.team/offensive-security/defense-evasion/parent-process-id-ppid-spoofing)? This is done by creating a trace session using `Microsoft-Windows-Kernel-Process` as an ETW provider and correlating between `ExecutionProcessID` and `ParentProcessID` field.
 
@@ -220,12 +220,12 @@ I have included the built and `ILMerge`'d PoC to detect `PPID Spoofing` in the r
 
 Lastly, here is a memory sweep of the payload process/sacrificial process with [Moneta](https://github.com/forrest-orr/moneta):
 
-![Moneta](https://github.com/slaeryan/AQUARMOURY/blob/master/Wraith/Screenshots/moneta.PNG "Moneta")
+![Moneta](https://github.com/reveng007/AQUARMOURY/blob/master/Wraith/Screenshots/moneta.PNG "Moneta")
 
 It does provide us with an alert saying `Abnormal private RX memory` which may not always necessarily indicate that something's wrong but it definitely warrants a second look and in this case we inspect further with ProcessHacker to confirm that the memory flagged by `Moneta` does indeed contain our payload(`MessageBox` in our case).
 
 ## EDIT
-So some people have asked me why I had to get a pointer to `PEB` struct via `TEB` in [line 340](https://github.com/slaeryan/AQUARMOURY/blob/1923e65190875f7c61c76fb430d526e5deaa062a/Wraith/Src/Syscalls.h#L340) when I could have retrieved it directly like:
+So some people have asked me why I had to get a pointer to `PEB` struct via `TEB` in [line 340](https://github.com/reveng007/AQUARMOURY/blob/1923e65190875f7c61c76fb430d526e5deaa062a/Wraith/Src/Syscalls.h#L340) when I could have retrieved it directly like:
 ```
 PPEB peb = (PPEB)__readgsqword(0x60)
 ```
@@ -234,7 +234,7 @@ Furthermore, if we need `PEB` only to get OS version for syscalls why even bothe
 
 The answer is this:
 
-![PEB Access](https://github.com/slaeryan/AQUARMOURY/blob/master/Wraith/Screenshots/peb-access.png "PEB Access")
+![PEB Access](https://github.com/reveng007/AQUARMOURY/blob/master/Wraith/Screenshots/peb-access.png "PEB Access")
 
 As highlighted by the above screenshot, `CAPA` was detecting my `PEB` access and I did not want to ruin my clean result :)
 
