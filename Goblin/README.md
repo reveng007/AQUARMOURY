@@ -4,7 +4,7 @@
 ## Introduction
 `Goblin` is a module to enumerate all the threads of the `EventLog` Service Module(`wevtsvc.dll`) and kill them in an effort to disable `EventLog` service from registering any new events even though the service appears to be running. Disabling Windows Event Logging and Sysmon logging paves the way for operators to perform Post-Exploitation activities safely and stealthily.
 
-![wevtsvc.dll Threads](https://github.com/slaeryan/AQUARMOURY/blob/master/Goblin/Screenshots/evtlog-threads.PNG "wevtsvc.dll Threads")
+![wevtsvc.dll Threads](https://github.com/reveng007/AQUARMOURY/blob/master/Goblin/Screenshots/evtlog-threads.PNG "wevtsvc.dll Threads")
 
 Additionally, it also allows us to "revive" the `EventLog` service again without requiring a reboot after we are done with Post-Ex activities.
 
@@ -44,7 +44,7 @@ Refer to [1](https://twitter.com/inzlain/status/867172350457925632/photo/1) and 
 
 Enter Goblin.
 
-![Goblin Overview](https://github.com/slaeryan/AQUARMOURY/blob/master/Goblin/Screenshots/overview.PNG "Goblin Overview")
+![Goblin Overview](https://github.com/reveng007/AQUARMOURY/blob/master/Goblin/Screenshots/overview.PNG "Goblin Overview")
 
 The first `notepad.exe` was started before running the `Goblin` module on the host and hence reported. The second one was launched after killing the `EventLog` service module threads and as expected the `notepad.exe` process creation event(Sysmon Event ID 1) never showed up in Sysmon logs. Note the time difference underlined in red, operators were successfully able to conduct Post-Ex activities during this time without any of it reported by Sysmon or being forwarded to SOC/SIEM.
 
@@ -64,16 +64,16 @@ For a more elegant solution that allows filtering of events reported, see [@bats
 
 ## Detection
 Here is a mandatory [CAPA](https://github.com/fireeye/capa) scan result of the `Goblin` DLL.
-![CAPA Scan](https://github.com/slaeryan/AQUARMOURY/blob/master/Goblin/Screenshots/capa.PNG "CAPA Scan")
+![CAPA Scan](https://github.com/reveng007/AQUARMOURY/blob/master/Goblin/Screenshots/capa.PNG "CAPA Scan")
 
 And here is an additional `System` event reported as a result of "reviving" the `EventLog` service(Event ID 7031)
-![Detection](https://github.com/slaeryan/AQUARMOURY/blob/master/Goblin/Screenshots/detection.PNG "Detection")
+![Detection](https://github.com/reveng007/AQUARMOURY/blob/master/Goblin/Screenshots/detection.PNG "Detection")
 Sometimes there also appears to be a `System` log indicating `EventLog` service has crashed(Event ID 7034).
 
 Note that by killing the `EventLog` service threads, **NO** additional events show up in the event logs whatsoever. Detection from event logs is possible iff operator has restarted the service.
 
 Another point to note is that enabling `EnableSvchostMitigationPolicy` enables `ACG` and `CIG` of `svchost.exe` which in turn makes running `EvtMute` non-trivial but would have no effect on this technique since it is not reliant on process injection and trampolines.
-![svchost.exe Mitigation](https://github.com/slaeryan/AQUARMOURY/blob/master/Goblin/Screenshots/svchost-mitigation.PNG "svchost.exe Mitigation")
+![svchost.exe Mitigation](https://github.com/reveng007/AQUARMOURY/blob/master/Goblin/Screenshots/svchost-mitigation.PNG "svchost.exe Mitigation")
 
 ## Credits
 1. This tool was inspired by [@spotheplanet](https://twitter.com/spotheplanet) lab on [Disabling Windows Event Logs by Suspending EventLog Service Threads](https://www.ired.team/offensive-security/defense-evasion/disabling-windows-event-logs-by-suspending-eventlog-service-threads). Although, suspending/resuming threads do not work in practice because all the events are going to be written to the event Logs once the threads are resumed, it is an excellent post that explains in great detail the process of finding `wevtsvc.dll` threads. The code and algorithm are hacked from the post and I'd highly recommend giving it a read.
