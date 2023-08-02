@@ -19,7 +19,7 @@ Make sure you have a working VC++ 2019 dev environment set up beforehand and `Gi
 
 This is how it looks internally in-action:
 
-![Shellycoat Internal](https://github.com/slaeryan/AQUARMOURY/blob/master/Shellycoat/Screenshots/shellycoat-internal.gif "Shellycoat Internal")
+![Shellycoat Internal](https://github.com/reveng007/AQUARMOURY/blob/master/Shellycoat/Screenshots/shellycoat-internal.gif "Shellycoat Internal")
 
 The way I intend it to be used is for it to be injected into the sacrificial process spawned by the loader to "cleanse" the loaded DLL before the C2 payload is executed but it can be used to protect any sacrificial process by undoing PSP hooks.
 
@@ -67,7 +67,7 @@ So you see it is too effective to the point that it even takes away our ability 
 
 Enter our third contender in the list - `Section Remapping`!
 
-![Bypass Techniques](https://github.com/slaeryan/AQUARMOURY/blob/master/Shellycoat/Screenshots/bypass-techniques.png "Bypass Techniques")
+![Bypass Techniques](https://github.com/reveng007/AQUARMOURY/blob/master/Shellycoat/Screenshots/bypass-techniques.png "Bypass Techniques")
 
 The flow of the technique is as follows:
 1) [NtCreateFile()](https://docs.microsoft.com/en-us/windows/win32/api/winternl/nf-winternl-ntcreatefile) - To get a handle to the clean and unhooked DLL on disk
@@ -84,13 +84,13 @@ The second option is to attempt to "cleanse" the already loaded `Ntdll` by **ove
 
 Here is a diagram that was shamelessly stolen from [ired.team](https://www.ired.team/offensive-security/defense-evasion/how-to-unhook-a-dll-using-c++) that should make this clear:
 
-![Section Remapping](https://github.com/slaeryan/AQUARMOURY/blob/master/Shellycoat/Screenshots/section-remapping.png "Section Remapping")
+![Section Remapping](https://github.com/reveng007/AQUARMOURY/blob/master/Shellycoat/Screenshots/section-remapping.png "Section Remapping")
 
 This mapping can also be done using **memory-mapped files** using [CreateFileMappingA](https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createfilemappinga) and [MapViewOfFile](https://docs.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-mapviewoffile) as shown in various PoCs by [@spotheplanet](https://twitter.com/spotheplanet), [@dtm](https://twitter.com/0x00dtm), [Solomon Sklash](https://github.com/SolomonSklash) etc. I have decided to implement it using their lower-level cousins and **section objects**.
 
 The reason being:
 
-![Why Syscalls](https://github.com/slaeryan/AQUARMOURY/blob/master/Shellycoat/Screenshots/why-syscall.png "Why Syscalls")
+![Why Syscalls](https://github.com/reveng007/AQUARMOURY/blob/master/Shellycoat/Screenshots/why-syscall.png "Why Syscalls")
 
 As shown in the above screenshot from a [blog post](https://www.cyberbit.com/blog/endpoint-security/malware-mitigation-when-direct-system-calls-are-used/) by [CyberBit](https://www.cyberbit.com/), this technique itself can be potentially detected using hooks(although unlikely!)
 
@@ -102,7 +102,7 @@ The pros of this method as compared to `Lagos Island method`/using NtReadFile an
 
 The following snippet of a table from [CyberBit's blog post]() might make it clearer:
 
-![Reading Ntdll](https://github.com/slaeryan/AQUARMOURY/blob/master/Shellycoat/Screenshots/reading-ntdll.png "Reading Ntdll")
+![Reading Ntdll](https://github.com/reveng007/AQUARMOURY/blob/master/Shellycoat/Screenshots/reading-ntdll.png "Reading Ntdll")
 
 Furthermore, in the unlikely event that **Blue Teams decide to monitor for open handles to `Ntdll.dll` on disk**, **it is quite short-lived and we unmap the section view and close the handles as soon as we finish undoing the hooks**.
 
@@ -121,15 +121,15 @@ Because screenshots or it didn't happen ;)
 
 The GIF below shows inline hooking `NtCreateFile` with [Detours](https://github.com/microsoft/Detours) to pop a MessageBox every time the user tries to save a file by injecting the hooking DLL(`edr.dll`) into `notepad.exe`.
 
-![Hooking](https://github.com/slaeryan/AQUARMOURY/blob/master/Shellycoat/Screenshots/hooking.gif "Hooking")
+![Hooking](https://github.com/reveng007/AQUARMOURY/blob/master/Shellycoat/Screenshots/hooking.gif "Hooking")
 
 And this demonstrates how we undo the hooks by injecting `shellycoat_x64.dll` to map a clean copy of `Ntdll` from disk and overwrite the hooked `.text` section of loaded `Ntdll` thereby regaining the ability to save files again.
 
-![Unhooking](https://github.com/slaeryan/AQUARMOURY/blob/master/Shellycoat/Screenshots/unhooking.gif "Unhooking")
+![Unhooking](https://github.com/reveng007/AQUARMOURY/blob/master/Shellycoat/Screenshots/unhooking.gif "Unhooking")
 
 And lastly, here is a mandatory [CAPA](https://github.com/fireeye/capa) scan result of `shellycoat` DLL:
 
-![CAPA](https://github.com/slaeryan/AQUARMOURY/blob/master/Shellycoat/Screenshots/capa.PNG "CAPA")
+![CAPA](https://github.com/reveng007/AQUARMOURY/blob/master/Shellycoat/Screenshots/capa.PNG "CAPA")
 
 ## Credits
 1. [@dtm](https://twitter.com/0x00dtm) for [https://0x00sec.org/t/defeating-userland-hooks-ft-bitdefender/12496](https://0x00sec.org/t/defeating-userland-hooks-ft-bitdefender/12496)
