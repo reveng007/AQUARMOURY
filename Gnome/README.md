@@ -20,7 +20,7 @@ Here is a guide to building the tool in easy steps:
 
 As with most of the tools in this tool suite, `Gnome` is compiled to a DLL and converted to a PIC blob with the help of [sRDI](https://github.com/monoxgas/sRDI) courtesy of [@monoxgas](https://twitter.com/monoxgas?lang=en) and delivered straight to memory via your favourite C2 framework for inline execution/local execution in the implant process. It can also be injected to a remote process using `shinject` or `shspawn` (fork'n'run).
 
-![Running Gnome](https://github.com/slaeryan/AQUARMOURY/blob/master/Gnome/Screenshots/running-gnome.PNG "Running Gnome")
+![Running Gnome](https://github.com/reveng007/AQUARMOURY/blob/master/Gnome/Screenshots/running-gnome.PNG "Running Gnome")
 
 **On the first run, it will attempt to drop'n'load the payload driver and on the second run, it will unload the driver and clean up after itself**.
 
@@ -39,7 +39,7 @@ When `Gnome` is executed in-memory, the flow of its operation is quite simple an
 3. Our next step is creating a couple of registry keys(and subkeys) and setting their respective values which are required for loading drivers via this technique. First, we create a key at `HKLM\SYSTEM\CurrentControlSet\Services\<driver name>` and four subkeys called `ImagePath`, `Type`, `Start` and `ErrorControl` under it. Then the values of the subkeys are set to driver path on disk, 1 (this is a kernel driver), 3 (we want a manual load) and finally 0 (since we do not load driver at startup) respectively.
 Here's a screenshot that might help visualise this:
 
-![Registry Entries](https://github.com/slaeryan/AQUARMOURY/blob/master/Gnome/Screenshots/reg-entries.PNG "Registry Entries")
+![Registry Entries](https://github.com/reveng007/AQUARMOURY/blob/master/Gnome/Screenshots/reg-entries.PNG "Registry Entries")
 
 4. Now, we need to convert the registry service key path of our driver to `Unicode`. This is essential because `NtLoadDriver` requires to be fed a `Unicode` string. This can be achieved via `RtlInitUnicodeString`. Finally, we may call `NtLoadDriver` with the `Unicode` registry service path as the single argument to load the driver. Keep in mind that:
 ```
@@ -57,11 +57,11 @@ That is if Test Mode is not turned on like so:
 ## Detections
 Here is a mandatory [CAPA](https://github.com/fireeye/capa) scan result of the `Gnome` DLL:
 
-![CAPA](https://github.com/slaeryan/AQUARMOURY/blob/master/Gnome/Screenshots/capa.PNG "CAPA")
+![CAPA](https://github.com/reveng007/AQUARMOURY/blob/master/Gnome/Screenshots/capa.PNG "CAPA")
 
 And here is a screenshot showing Sysmon logs of running Gnome:
 
-![Sysmon](https://github.com/slaeryan/AQUARMOURY/blob/master/Gnome/Screenshots/sysmon.PNG "Sysmon")
+![Sysmon](https://github.com/reveng007/AQUARMOURY/blob/master/Gnome/Screenshots/sysmon.PNG "Sysmon")
 
 As expected, there are a couple of `Sysmon Event ID 13`'s denoting registry value modifications as made while preparing to load the driver and finally the big event - `Sysmon Event ID 6` denoting that a driver was loaded successfully.
 
